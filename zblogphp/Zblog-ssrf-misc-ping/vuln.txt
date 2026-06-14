@@ -1,0 +1,15 @@
+1. SQLMap命令
+此漏洞为服务端请求伪造（SSRF）漏洞，非SQL注入类型，因此不涉及SQLMap命令。
+
+2. 漏洞描述
+Z-BlogPHP是一套开源的PHP博客内容管理系统，广泛应用于个人博客和小型企业网站建设。Z-BlogPHP 1.7.5 Build 173540版本的misc_ping接口存在服务端请求伪造（SSRF）漏洞。
+
+该漏洞位于zb_system/function/c_system_misc.php文件的misc_ping函数中（第579-601行）。该函数通过cmd.php?act=misc&type=ping接口对未认证用户开放访问。函数接收用户传入的url参数，并使用Network::Create()向该URL发起HTTP请求。由于系统GUID（ZC_BLOG_CLSID）为空字符串，WebToken的HMAC密钥为空，攻击者可轻易伪造有效Token，绕过Token验证。攻击者通过构造恶意url参数，可使服务器向任意地址发起HTTP请求，包括内网地址和云元数据服务。
+
+此漏洞无需管理员权限即可利用，攻击者可通过SSRF探测内网服务、访问云平台元数据接口（如169.254.169.254）、或攻击内网其他脆弱的Web应用。CVSS v3.1评分：6.5（中危），但在特定环境下（如云部署）危害可升至严重。
+
+3. 临时解决方案
+（1）在misc_ping函数中对url参数进行白名单校验，仅允许向自身站点地址发起请求。
+（2）修改zb_system/function/c_system_misc.php第585-588行，在构造请求URL前验证url参数是否在允许列表中。
+（3）修复系统GUID为空的问题：在zb_system/function/lib/zblogphp.php的Load函数中添加GUID检测与自动生成逻辑，确保系统GUID不为空。
+（4）如非必要，可在Web服务器层面限制PHP向外发起HTTP请求（如配置防火墙规则）。
