@@ -1,0 +1,15 @@
+1. SQLMap命令
+此漏洞为路径穿越/文件写入漏洞，非SQL注入类型，因此不涉及SQLMap命令。
+
+2. 漏洞描述
+Z-BlogPHP是一套开源的PHP博客内容管理系统，广泛应用于个人博客和小型企业网站建设。Z-BlogPHP 1.7.5 Build 173540版本的App::UnPack函数存在路径穿越漏洞。
+
+该漏洞位于zb_system/function/lib/app.php文件的App::UnPack方法中（第769行）。该方法用于解析ZBA格式（Z-Blog Application）插件/主题包，将其中base64编码的文件写入磁盘。在文件写入时，代码使用str_replace('./', '', ...)对路径进行过滤，试图防止路径穿越。然而该过滤机制存在缺陷：str_replace('./', '')仅移除"./"字符串，但无法阻止"../"路径穿越。当攻击者构造包含"../"的文件路径时（如"../shell.php"），可绕过过滤将PHP webshell写入zb_users目录。由于PHP内置服务器会执行该目录下的PHP文件，攻击者可通过HTTP直接访问webshell，实现远程代码执行。
+
+此漏洞可与AppCentre插件的ZBA上传接口配合使用，或通过其他调用App::UnPack的入口点触发。CVSS v3.1评分：7.2（高危）。
+
+3. 临时解决方案
+（1）修改zb_system/function/lib/app.php第769行，将str_replace('./', '', ...)替换为基于realpath()的路径校验，确保最终写入路径在允许的目录范围内。
+（2）删除zb_users/plugin/目录下来源不明的文件及目录。
+（3）如未使用AppCentre插件，建议删除或禁用该插件目录。
+（4）配置Web服务器（如Nginx/Apache）禁止zb_users/目录下的PHP文件直接执行。

