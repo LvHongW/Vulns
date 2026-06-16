@@ -1,0 +1,20 @@
+1. SQLMap命令
+   （SQL注入漏洞，影响6个数据模型）
+   sqlmap -u "http://target/admin/article/datalist?order=id" --cookie="PHPSESSID=xxx" -p order --technique=B --dbms=mysql --level=3 --dbs
+
+   注：同样受影响的端点包括 /admin/gallery/datalist、/admin/goods/datalist、/admin/pages/datalist、/admin/gallery_cate/datalist、/admin/article_cate/datalist
+
+2. 漏洞描述（100-400字）
+   勾股CMS是一套基于ThinkPHP8+Layui+MySQL打造的开源内容管理系统，前端使用Layui数据表格组件实现数据列表展示。
+
+   该漏洞位于系统多个后台数据列表接口的ORDER BY排序处理逻辑中，涉及Article、Gallery、Goods、Pages、GalleryCate、ArticleCate共6个数据模型文件。各模型在处理列表查询时，均直接从用户请求中获取order参数并直接传入ThinkPHP的`->order($order)`方法：`$order = empty($param['order']) ? 'a.id desc' : $param['order']`。由于ThinkPHP的order()方法接受原始SQL表达式，导致攻击者可通过order参数注入任意SQL排序逻辑。
+
+   攻击者可利用布尔盲注技术（如`IF(condition,id,create_time)`）、延时注入或报错注入逐字节提取数据库中的敏感信息。
+
+   利用条件：攻击者需具备后台管理员登录权限；目标存在对应的数据表且管理员有列表查看权限。
+
+3. 临时解决方案（100字以内）
+   对order参数实施严格的白名单校验，仅允许预定义的字段和方向：
+   `$allowed = ['id','create_time','update_time','title','sort'];`
+   解析用户输入的order值，验证字段名和排序方向均在白名单内：
+   `if(!in_array($field,$allowed) || !in_array($dir,['asc','desc'])){ $order = 'a.id desc'; }`

@@ -1,0 +1,17 @@
+1. SQLMap命令
+   （SQL注入漏洞，二次注入，需配合session操纵）
+   该漏洞为二次注入，需要先通过其他SQL注入点或session操纵修改session中uid值后再触发攻击。SQLMap可利用但需先获取有效的session。
+
+2. 漏洞描述（100-400字）
+   勾股CMS是一套基于ThinkPHP8+Layui+MySQL打造的开源内容管理系统，系统通过全局中间件实现管理员认证和权限验证。
+
+   该漏洞位于后台权限验证中间件（/app/admin/middleware/Auth.php 中 checkAuth()方法），在查询用户所属权限组时，直接将session中的uid值通过字符串插值拼接到SQL WHERE子句中：`->where("a.uid='{$uid}' and g.status='1'")`。虽然uid最初来自服务器session（用户登录时写入），但若攻击者能通过其他漏洞（如其他SQL注入点、session固定、或弱密码破解后登录）操纵session中的uid值，即可在认证环节触发SQL注入。由于该中间件在每个需权限验证的请求中均被调用，攻击面极广。
+
+   成功利用可导致数据库信息泄露、权限绕过等严重后果。该漏洞与漏洞001（Admin::view()）具有完全相同的编码错误模式，表明该系统在SQL安全编码方面存在系统性问题。
+
+   利用条件：攻击者需先获取有效的管理员session（可通过其他SQL注入漏洞辅助）；目标系统开启权限验证。
+
+3. 临时解决方案（100字以内）
+   将`->where("a.uid='{$uid}' and g.status='1'")`修改为数组参数绑定方式：
+   `->where([['a.uid','=',$uid],['g.status','=','1']])`
+   同时全项目搜索类似的字符串插值SQL写法并统一修复。

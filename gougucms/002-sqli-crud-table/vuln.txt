@@ -1,0 +1,18 @@
+1. SQLMap命令
+   （SQL注入漏洞）
+   sqlmap -u "http://target/admin/crud/table?name=cms_admin" --cookie="PHPSESSID=xxx" --technique=B --dbms=mysql --level=3 --dbs
+
+2. 漏洞描述（100-400字）
+   勾股CMS是一套基于ThinkPHP8+Layui+MySQL打造的开源内容管理系统，为开发者提供CRUD代码快速生成等功能。
+
+   该漏洞位于后台CRUD生成器的表信息查看功能（/app/admin/controller/Crud.php 中 table()方法），系统在执行数据库表结构查询时，直接将用户传入的表名参数拼接到原始SQL查询中。漏洞点涉及两处：其一为`Db::query('SHOW TABLE STATUS LIKE ' . "'" . $param['name'] . "'")`，其二为`Db::query("SHOW FULL COLUMNS FROM " . $param['name'])`，均使用ThinkPHP的`Db::query()`原始查询方法，未经过任何参数绑定或过滤。
+
+   攻击者可构造包含SQL注入payload的name参数，绕过LIKE子句的限制或直接在SHOW FULL COLUMNS FROM语句中注入任意SQL代码。该接口仅验证用户登录状态，任意后台管理员均可触发。攻击者可提取数据库表结构、管理员密码哈希等敏感信息，结合MySQL FILE权限可写入Webshell。
+
+   利用条件：攻击者需具备后台管理员登录权限；目标MySQL用户具备数据库查询权限。
+
+3. 临时解决方案（100字以内）
+   在table()方法开头添加表名白名单校验：
+   `if(!preg_match('/^[a-zA-Z0-9_]+$/',$param['name'])){return to_assign(1,'非法表名');}`
+   同时将Db::query()替换为参数化查询：
+   `Db::query('SHOW TABLE STATUS LIKE :name',['name'=>$param['name']])`
